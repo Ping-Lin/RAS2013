@@ -1,7 +1,7 @@
 /**
  * Constants 介面定義了一些常數的數值
- * @author Ping
- *
+ * 
+ *	@author Ping
  */
 public interface Constants {
 	/**
