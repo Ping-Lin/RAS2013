@@ -40,23 +40,24 @@ public class ReceivingArea {
 			}
 			j++;
 		}
-		System.out.println(findLongestTrain());
 	}
 	
 	/*
-	 * 找出最長的火車編號並回傳(int)
+	 * 找出軌道裡有最長的火車編號並回傳(int)，
+	 * 若回傳-1表示沒東西了
 	 */
-	private int findLongestTrain(){
+	public int findLongestTrainTrack(){
 		int max = Integer.MIN_VALUE;
 		int maxId = -1;   //最長火車的id
+		int i=0;
 		for(Track rt : receivingTrack){
 			if(rt.ifEmpty == false){
 				if(rt.train.size() > max){
 					max = rt.train.size();
-					maxId = rt.train.get(0).trainId;
-				}
-							
+					maxId =i;
+				}		
 			}
+			i++;
 		}
 		return maxId;
 	}
