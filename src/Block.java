@@ -1,4 +1,8 @@
-
+/*
+ * 此class定義所有與每一個car所需要記載的內容
+ * 
+ *  @author Ping
+ */
 public class Block {
 
 	String blockName;   //block name

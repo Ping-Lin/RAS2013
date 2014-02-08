@@ -1,4 +1,8 @@
-
+/*
+ * 此class定義有關block的類別和組合
+ * 
+ *  @author Ping
+ */
 public class BlockValues {
 	public String[] blockValues;
 	public int blockLength;
