@@ -97,10 +97,10 @@ public class ClassificationArea {
 			
 		}
 		
-		//依序找最長的看可不可以combine
-		
-
-		
+		//最後記得釋放
+		tmpIdCombine = null;
+		tmpNameCombine = null;
+		bl = null;
 		/*
 		 * 加上最小限制
 		 */
