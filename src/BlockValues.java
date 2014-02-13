@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 /*
  * 此class定義有關block的類別和組合
  * 
@@ -36,6 +38,34 @@ public class BlockValues {
 		blockValues = new String[]{"B1", "B2", "B3", "B4", "B5", "B6"};
 		blockLength = blockValues.length;
 		blockCombination = new String[]{"B5,B6"};
+	}
+	/*
+	 * 檢查是否可以結合，參數為block name集合
+	 */
+	boolean ifBlockCombination(ArrayList<String> blockSet){
+		boolean ifNoCombine = false;
+		//這邊檢查同block name的結合
+		String name = new String(blockSet.get(0));
+		for(String a : blockSet){
+			if(name.equals(a) == false){
+				ifNoCombine = true;
+				break;
+			}
+		}
+		if(ifNoCombine == false)
+			return true;
+		
+		//這邊檢查不同block name的結合
+		for(String bn : blockCombination){
+			ifNoCombine = false;
+			for(String a : blockSet){
+				if(bn.contains(a) == false)
+					ifNoCombine = true;
+			}
+			if(ifNoCombine == false)
+				return true;
+		}
+		return false;
 	}
 	
 }
