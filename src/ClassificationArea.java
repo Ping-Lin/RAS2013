@@ -76,18 +76,19 @@ public class ClassificationArea {
 		
 		for(int i=0 ; i<tmpIdCombine.size() ; i++){   //如果單一軌道可以出去就直接出去，依序增加
 			maxIdCombine.clear();
-			maxIdCombine.add(i);
+			maxIdCombine.add(tmpIdCombine.get(i));
 			tmpNameCombine.clear();
 			tmpNameCombine.add(classificationTrack[tmpIdCombine.get(i)].train.get(0).blockName);
 			max = classificationTrack[tmpIdCombine.get(i)].train.size();
 			for(int j=i+1 ; j<tmpIdCombine.size() ; j++){
 				if(max >= Constants.MIN_OUTBOUND_TRAIN_NUMBER){   //如果可以出去(滿足最小出去原則)
+					System.out.println(max + "!!!");
 					return maxIdCombine;
 				}
 				else{
 					tmpNameCombine.add(classificationTrack[tmpIdCombine.get(j)].train.get(0).blockName);
 					if(bl.ifBlockCombination(tmpNameCombine)){   //判斷是否可以結合,如果可以結合就加進去
-						maxIdCombine.add(j);
+						maxIdCombine.add(tmpIdCombine.get(j));
 						max += classificationTrack[tmpIdCombine.get(j)].train.size();
 					}
 					else   //不行就把tmp的除掉
