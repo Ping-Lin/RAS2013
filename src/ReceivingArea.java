@@ -12,14 +12,16 @@ public class ReceivingArea {
 	Track[] receivingTrack;
 	ArrayList<ArrayList<Block>> blockList;
 	private Timer timer;
+	private int countRemoveTrack;   //計算有幾輛車來了
 	
 	public ReceivingArea(ArrayList<ArrayList<Block>> BL){
 		receivingTrack = new Track[Constants.RECEIVING_TRACKS_NUMBER];
 		for(int i=0 ; i<receivingTrack.length ; i++)   //new 空間
 			receivingTrack[i] = new Track();
 		blockList = BL;
+		countRemoveTrack = blockList.size();
 		timer = new Timer();
-		timer.scheduleAtFixedRate(new ReceivingTask(), 0, 10);
+		timer.scheduleAtFixedRate(new ReceivingTask(), 0, 300);
 	}
 	/*
 	 * 假想有一個隱形的引擎把火車拉向receiving area
@@ -35,6 +37,7 @@ public class ReceivingArea {
 					}
 					rt.ifEmpty = false;
 					blockList.remove(i);
+					countRemoveTrack--;
 					break;
 				}
 			}
@@ -67,6 +70,10 @@ public class ReceivingArea {
 	class ReceivingTask extends TimerTask{
 		public void run(){
 			moveInTrain();
+			if(countRemoveTrack == 0){
+				System.out.println("[Receiving Area]All trains have come");
+				timer.cancel();
+			}
 		}
 	}
 }
