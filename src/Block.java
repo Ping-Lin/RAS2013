@@ -34,7 +34,7 @@ public class Block {
 	double timeEndHump;   //ending time of humping job
 	double timeStartPullBack;   //starting time of pull back job
 	double timeEndPullBack;   //ending time of pull back job
-	double timeAtDepartureArea;   //departure time at departure area
+	double timeDepartureAtDepartureArea;   //departure time at departure area
 	
 	public Block(){
 		
