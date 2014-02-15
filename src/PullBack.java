@@ -55,10 +55,11 @@ public class PullBack implements Runnable{
 				if(getTime()>time)
 					time = getTime();
 				
-				System.out.println("[Pullback]Strat: " + time);
+				System.out.println("[Pullback]Start: " + time);
 				for(Block b: train){
 					b.timeStartPullBack = time;
 					b.timeEndPullBack = time + Constants.PULL_BACK_INTERVAL + Constants.PULL_BACK_MULTI_EACH_ADDITIONAL*1.0f*(tmpIdCombine.size()-1);
+					b.pullBackEngineNo = pullBackNumber;
 				}
 				
 				if(outboundArea.receivePullBackBlock(train)==false){   //如果接收失敗
