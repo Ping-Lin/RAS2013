@@ -52,8 +52,8 @@ public class Hump {
 				}
 				Test1.time += Constants.HUMP_RATE * receivingArea.receivingTrack[trackNo].train.size();
 				classificationArea.updateTime(Test1.time);
-				receivingArea.receivingTrack[trackNo].ifEmpty = true;
 				receivingArea.receivingTrack[trackNo].train.clear();
+				receivingArea.receivingTrack[trackNo].ifEmpty = true;			
 			}
 			else{   //如果沒有火車就結束掉hump的工作(這邊可能要再修改，注意結果是不是有所有block都有抓到)
 				System.out.println("[Hump]There is no train at receivingArea.");

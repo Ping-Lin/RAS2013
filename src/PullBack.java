@@ -72,8 +72,8 @@ public class PullBack implements Runnable{
 					classificationArea.timePullBack.add(getTime());
 					
 					for(int tic : tmpIdCombine){
-						classificationArea.classificationTrack[tic].ifEmpty = true;
 						classificationArea.classificationTrack[tic].train.clear();
+						classificationArea.classificationTrack[tic].ifEmpty = true;						
 					}
 					System.out.println("Pull back Number: " + pullBackNumber + "\nCount: " + train.size());
 					for(Block a : train)
