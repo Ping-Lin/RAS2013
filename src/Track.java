@@ -8,9 +8,11 @@ import java.util.ArrayList;
 public class Track {
 	boolean ifEmpty;   //判斷軌道是否為空
 	ArrayList<Block> train;   //track上面的火車
+	boolean ifPullBackPull;   //只有combination會用到
 	
 	public Track(){
 		ifEmpty = true;
 		train = new ArrayList<Block>();
+		ifPullBackPull = false;
 	}
 }
