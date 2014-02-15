@@ -7,10 +7,16 @@ import java.util.ArrayList;
  */
 public class ClassificationArea {
 	Track[] classificationTrack;
+	private double lastTime;
+	ArrayList<Double> timePullBack;
+	
 	public ClassificationArea(){
 		classificationTrack = new Track[Constants.CLASSIFICATION_TRACKS_NUMBER];
 		for(int i=0 ; i<classificationTrack.length ; i++)   //new 空間
 			classificationTrack[i] = new Track();
+		lastTime = 0.0;
+		
+		timePullBack = new ArrayList<Double>();
 	}
 
 	
@@ -82,7 +88,6 @@ public class ClassificationArea {
 			max = classificationTrack[tmpIdCombine.get(i)].train.size();
 			for(int j=i+1 ; j<tmpIdCombine.size() ; j++){
 				if(max >= Constants.MIN_OUTBOUND_TRAIN_NUMBER){   //如果可以出去(滿足最小出去原則)
-					System.out.println(max + "!!!");
 					return maxIdCombine;
 				}
 				else{
@@ -95,7 +100,9 @@ public class ClassificationArea {
 						tmpNameCombine.remove(tmpNameCombine.size()-1);
 				}
 			}
-			
+			if(max >= Constants.MIN_OUTBOUND_TRAIN_NUMBER){   //最後一次，如果可以出去(滿足最小出去原則)
+				return maxIdCombine;
+			}
 		}
 		
 		//最後記得釋放
@@ -113,8 +120,20 @@ public class ClassificationArea {
 		return maxIdCombine;
 	}
 	
+	/*
+	 * 更新classification time的最後時間
+	 */
+	void updateTime(double time){
+		if(time > lastTime)   //如果有大於原本的時間在更新
+			lastTime = time;
+	}
 	
-	
+	/*
+	 * 取得classification time的最後時間
+	 */
+	double getTime(){
+		return lastTime;
+	}
 	
 	
 	
