@@ -1,5 +1,3 @@
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.ArrayList;;
 
 public class PullBack implements Runnable{
@@ -27,7 +25,8 @@ public class PullBack implements Runnable{
 		double time=0.0;
 
 		if(tmpIdCombine.isEmpty() == false && tmpIdCombine.get(0) == -1){  //classification不能出去
-			System.out.println("Train in classification track are too small to go out.");
+			System.out.println("[Pullback]Train in classification track are too small to go out.");
+			updateTime(getTime()+0.1f);
 			return;
 		}
 		else if(tmpIdCombine.isEmpty() == false){   //classification可以拉
@@ -63,7 +62,7 @@ public class PullBack implements Runnable{
 				}
 				
 				if(outboundArea.receivePullBackBlock(train)==false){   //如果接收失敗
-					System.out.println("Outbound Area is full");
+					System.out.println("[Pullback]Outbound Area is full");
 				}
 				else{   //如果接收成功再把classification area的部分清掉
 					//接收成功在改變時間
@@ -78,7 +77,13 @@ public class PullBack implements Runnable{
 					System.out.println("Pull back Number: " + pullBackNumber + "\nCount: " + train.size());
 					for(Block a : train)
 						System.out.print(a.blockName + ",");
-					System.out.println();
+					System.out.println("\n");
+					
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 			
@@ -87,6 +92,7 @@ public class PullBack implements Runnable{
 		}
 		else{   //沒東西拉了，GG結束
 			System.out.println("[Pull Back] There is no train at classification area.");
+			updateTime(getTime()+0.1f);
 		}
 	}
 	

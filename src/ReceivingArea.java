@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * 此Class為ReceivingArea，
@@ -8,10 +6,9 @@ import java.util.TimerTask;
  * 
  * @author Ping
  */
-public class ReceivingArea {
+public class ReceivingArea implements Runnable{
 	Track[] receivingTrack;
 	ArrayList<ArrayList<Block>> blockList;
-	private Timer timer;
 	private int countRemoveTrack;   //計算有幾輛車來了
 	
 	public ReceivingArea(ArrayList<ArrayList<Block>> BL){
@@ -20,8 +17,6 @@ public class ReceivingArea {
 			receivingTrack[i] = new Track();
 		blockList = BL;
 		countRemoveTrack = blockList.size();
-		timer = new Timer();
-		timer.scheduleAtFixedRate(new ReceivingTask(), 0, 300);
 	}
 	/*
 	 * 假想有一個隱形的引擎把火車拉向receiving area
@@ -29,17 +24,18 @@ public class ReceivingArea {
 	public void moveInTrain(){
 		int j=0;
 		for(Track rt : receivingTrack){
-			for(int i=0 ; i<blockList.size() ; i++){
-				if(rt.ifEmpty==true && blockList.get(i).get(0).timeAtReceivingArea <= Test1.time){
-					rt.train = blockList.get(i);
-					for(Block b : rt.train){   //設定每一個car的receiving track為當前的track
-						b.receivingTrackNo = j;
-					}
-					rt.ifEmpty = false;
-					blockList.remove(i);
-					countRemoveTrack--;
-					break;
+			if(rt.ifEmpty==true && countRemoveTrack>0 && blockList.get(0).get(0).timeAtReceivingArea <= Test1.time
+					&& (blockList.get(0).get(0).timeAtReceivingArea <= Test1.time1P || 
+						blockList.get(0).get(0).timeAtReceivingArea <= Test1.time2P)){
+				System.out.println("!!!!");
+				rt.train = blockList.get(0);
+				for(Block b : rt.train){   //設定每一個car的receiving track為當前的track
+					b.receivingTrackNo = j;
 				}
+				rt.ifEmpty = false;
+				blockList.remove(0);
+				countRemoveTrack--;
+				break;
 			}
 			j++;
 		}
@@ -50,6 +46,7 @@ public class ReceivingArea {
 	 * 若回傳-1表示沒東西了
 	 */
 	public int findLongestTrainTrack(){
+		moveInTrain();
 		int max = Integer.MIN_VALUE;
 		int maxId = -1;   //最長火車的id
 		int i=0;
@@ -67,13 +64,16 @@ public class ReceivingArea {
 	/*
 	 * 持續做接收車子的動作
 	 */
-	class ReceivingTask extends TimerTask{
-		public void run(){
-			moveInTrain();
-			if(countRemoveTrack == 0){
+	public void run(){
+		moveInTrain();
+		if(countRemoveTrack == 0){
+			try {
+				Thread.sleep(1000);
 				System.out.println("[Receiving Area]All trains have come");
-				timer.cancel();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
+	
 }
