@@ -15,37 +15,72 @@ public class ClassificationArea {
 		for(int i=0 ; i<classificationTrack.length ; i++)   //new 空間
 			classificationTrack[i] = new Track();
 		lastTime = 0.0;
-		
 		timePullBack = new ArrayList<Double>();
 	}
-
 	
 	/*
 	 * 將block存放在classification track，並將track是否為空設定為false。
 	 * true為成功接收，false為失敗
 	 */
-	public boolean receiveHumpBlock(Block b){
-		int trackNo=0;
-		for(Track ct : classificationTrack){   //先找有沒有符合同樣block name的track，注意不能超出其capacity
-			if(ct.ifEmpty == false && ct.train.size()+1 <= Constants.CLASSIFICATION_TRACKS_CAPACITY && ct.ifPullBackPull == false){
-				if(ct.train.get(0).blockName.equals(b.blockName)){
-					classificationTrack[trackNo].train.add(b);
-					return true;   //成功就回傳
+	public boolean receiveHumpBlock(ArrayList<Block> bl){
+		boolean ifAdd=false;
+		int trackNo;
+		ArrayList<Integer> addId = new ArrayList<Integer>();
+		for(Block b : bl){
+			ifAdd = false;
+			trackNo=0;
+			for(Track ct : classificationTrack){   //先找有沒有符合同樣block name的track，注意不能超出其capacity
+				if((ct.ifEmpty == false) && ((ct.train.size()+1) <= Constants.CLASSIFICATION_TRACKS_CAPACITY) && (ct.ifPullBackPull == false)){
+					if(ct.train.get(0).blockName.equals(b.blockName)){
+						ct.train.add(b);
+						ifAdd = true;
+						addId.add(trackNo);
+						ct.btt.get(ct.btt.size()-1).endingTime = b.timeEndHump;
+						break;   //成功就回傳
+					}
+				}
+				trackNo++;
+			}
+			//如果找不到可以add進去的track的話，就另闢空的track吧
+			trackNo=0;
+			if(ifAdd == false){
+				for(Track ct : classificationTrack){
+					if(ct.ifEmpty == true){
+						ct.train.add(b);
+						ct.ifEmpty = false;   //闢新的track要記錄時間，並將東西記錄到blockToTrack object(btt)
+
+						if(ct.btt.size()>0)
+							ct.btt.get(ct.btt.size()-1).endingTime = b.timeStartHump-Constants.HUMP_INTERVAL;   //把之前的ending time存進去
+						BlockToTrack tmp = new BlockToTrack();
+						tmp.trackNo = trackNo;
+						tmp.blockName = b.blockName;
+						tmp.dayNo = ((int)b.timeStartHump-1)/24+1;
+						tmp.startingTime = b.timeStartHump-Constants.HUMP_INTERVAL;
+						ct.btt.add(tmp);
+						tmp = null;
+						
+						ifAdd = true;
+						addId.add(trackNo);
+						break;
+					}
+					trackNo++;
 				}
 			}
-			trackNo++;
-		}
-		//如果找不到可以add進去的track的話，就另闢空的track吧
-		trackNo = 0;
-		for(Track ct : classificationTrack){
-			if(ct.ifEmpty == true){
-				classificationTrack[trackNo].train.add(b);
-				classificationTrack[trackNo].ifEmpty = false;
-				return true;
+			
+			//如果都不能加就不能加這串火車
+			if(ifAdd == false){
+				//把加進去的刪回來
+				for(int i : addId){
+					if(classificationTrack[i].train.size()-1!=0)
+						classificationTrack[i].train.remove(classificationTrack[i].train.size()-1);
+					else
+						classificationTrack[i].train.remove(0);
+				}
+				addId = null;
+				return false;
 			}
-			trackNo++;
 		}
-		return false;
+		return true;
 	}
 	
 	/*
@@ -63,18 +98,19 @@ public class ClassificationArea {
 		BlockValues bl = new BlockValues();
 		
 		for(int i=0 ; i<classificationTrack.length ; i++){   //插入排序法
-			int count = i;
-			for(int j=i-1 ; j>=0 ; j--){
+			int count = tmpIdCombine.size();
+			for(int j=tmpIdCombine.size()-1 ; j>=0 ; j--){
 				if(classificationTrack[i].ifEmpty == false){
 					ifAllTrackEmpty = false;
-					if(classificationTrack[i].train.size() > classificationTrack[j].train.size()){
+					if(classificationTrack[i].train.size() > classificationTrack[tmpIdCombine.get(j)].train.size()){
 						count = j;
-					}		
+					}
 				}
 			}
 			if(classificationTrack[i].ifEmpty == false)
 				tmpIdCombine.add(count, i);
-		}
+		}		
+		
 		if(ifAllTrackEmpty == true){   //加速程式進行，如果為空就回傳
 			maxIdCombine.clear();
 			return maxIdCombine;
@@ -96,8 +132,10 @@ public class ClassificationArea {
 						maxIdCombine.add(tmpIdCombine.get(j));
 						max += classificationTrack[tmpIdCombine.get(j)].train.size();
 					}
-					else   //不行就把tmp的除掉
-						tmpNameCombine.remove(tmpNameCombine.size()-1);
+					else{   //不行就把tmp的除掉
+						if(tmpNameCombine.size()>0)
+							tmpNameCombine.remove(tmpNameCombine.size()-1);
+					}
 				}
 			}
 			if(max >= Constants.MIN_OUTBOUND_TRAIN_NUMBER){   //最後一次，如果可以出去(滿足最小出去原則)

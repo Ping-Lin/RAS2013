@@ -11,7 +11,7 @@ public interface Constants {
 	int RECEIVING_TRACKS_CAPACITY = 40;
 	int CLASSIFICATION_TRACKS_NUMBER = 6;
 	int CLASSIFICATION_TRACKS_CAPACITY = 50;
-	int DEPARTURE_TRACKS_NUMBER = 4;   //4
+	int DEPARTURE_TRACKS_NUMBER = 4;
 	int DEPARTURE_TRACKS_CAPACITY = 40;
 	int MAX_OUTBOUND_TRAIN_NUMBER = 40;
 	int MIN_OUTBOUND_TRAIN_NUMBER = 30;
@@ -38,6 +38,6 @@ public interface Constants {
 	double TECHNICAL_INSPECTION_TIME = 45*1.0f/60;   //單位:小時
 	double PULL_BACK_INTERVAL = 10*1.0f/60;   //單位:小時
 	double PULL_BACK_MULTI_EACH_ADDITIONAL = 15*1.0f/60;   //單位:小時
-	double OUTBOUND_TRAIN_INTERVAL = 10*1.0f/60;   //單位:小時
-	*/
+	double OUTBOUND_TRAIN_INTERVAL = 10*1.0f/60;   //單位:小時*/
+	
 }

@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 
 /**
  * 此Class為ReceivingArea，
@@ -8,50 +10,69 @@
 public class Hump implements Runnable{
 	ReceivingArea receivingArea;
 	ClassificationArea classificationArea;
+	ArrayList<ArrayList<Block>> humpBlockList;
+	int count;   //時間用
 	
 	public Hump(ReceivingArea ra, ClassificationArea ca){
 		receivingArea = ra;
 		classificationArea = ca;
+		humpBlockList = new ArrayList<>();
 	}
 
 	public void run(){
-		int trackNo = receivingArea.findLongestTrainTrack();
+		ArrayList<Integer> trackNo = receivingArea.findLongestTrainTrack();
 		double time;   //用來比較classification time的時間
-		if(trackNo != -1){   //有火車			
-			time = receivingArea.receivingTrack[trackNo].train.get(0).timeAtReceivingArea + Constants.TECHNICAL_INSPECTION_TIME;    //每做一次hump的前置時間
+		ArrayList<Block> tmpList = new ArrayList<Block>();   //temp block list
+		boolean ifSuccessAccept = false;
+		for(int i=0 ; i<trackNo.size() ; i++){
+			if(ifSuccessAccept == true)   //如果成功接收就跳掉
+				return;
 			
-			if(Test1.time+Constants.HUMP_INTERVAL<=time){
-				Test1.time = time + Constants.HUMP_INTERVAL;
-			}
-			else{
-				Test1.time += Constants.HUMP_INTERVAL;   //如果在等待被拉的火車已經在那邊等了,即用現行時間來繼續跑時間
-			}
-			System.out.println("[Hump]" + Test1.time);
-			for(Block b : receivingArea.receivingTrack[trackNo].train){   //找出receivingArea最長的火車
-				b.timeStartHump = Test1.time;
-				b.timeEndHump = Test1.time + Constants.HUMP_RATE * receivingArea.receivingTrack[trackNo].train.size();
-				while(classificationArea.receiveHumpBlock(b) == false){   //沒有接收成功就結束掉或等待
-					
-					System.out.println("[Hump]classification tracks are full so fast, (wait or)break program.");
-					try {
-						Thread.sleep(300);						
-						Test1.time = findClosestTime(Test1.time);   //如果有卡住的話，時間用classification area紀錄的最後時間(pull back抓走的時間)
-						b.timeStartHump = Test1.time;
-						b.timeEndHump = Test1.time + Constants.HUMP_RATE * receivingArea.receivingTrack[trackNo].train.size();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+			if(trackNo.get(0).equals(-1)==false){   //有火車			
+				time = receivingArea.receivingTrack[trackNo.get(i)].train.get(0).timeAtReceivingArea + Constants.TECHNICAL_INSPECTION_TIME;    //每做一次hump的前置時間
+				
+				if(Test1.time+Constants.HUMP_INTERVAL<=time){
+					time = time + Constants.HUMP_INTERVAL;
+				}
+				else{
+					time = Test1.time + Constants.HUMP_INTERVAL;   //如果在等待被拉的火車已經在那邊等了,即用現行時間來繼續跑時間
+				}
+				for(Block b : receivingArea.receivingTrack[trackNo.get(i)].train){   //找出receivingArea最長的火車
+					b.timeStartHump = time;
+					b.timeEndHump = time + Constants.HUMP_RATE * receivingArea.receivingTrack[trackNo.get(i)].train.size();
+				}
+				if(classificationArea.receiveHumpBlock(receivingArea.receivingTrack[trackNo.get(i)].train) == false){   //沒有接收成功就結束掉或等待
+					System.out.println("[Hump]classification tracks are full. Change the train to hump.");
+					continue;
+				}
+				else{   //接收成功
+					for(Block b : receivingArea.receivingTrack[trackNo.get(i)].train){ 
+						tmpList.add(b);   //加進去tmp block list
 					}
-					//System.exit(1);
+					Test1.time = time;
+					System.out.println("[Hump]Start:" + Test1.time);
+					receivingArea.receivingTrack[trackNo.get(i)].humpTime = Test1.time;
+					Test1.time += Constants.HUMP_RATE * receivingArea.receivingTrack[trackNo.get(i)].train.size();
+					classificationArea.updateTime(Test1.time);
+					receivingArea.receivingTrack[trackNo.get(i)].train = null;
+					receivingArea.receivingTrack[trackNo.get(i)].ifEmpty = true;
+					humpBlockList.add(tmpList);
+					tmpList = null;
+					ifSuccessAccept = true;
+					count++;
 				}
 			}
-			Test1.time += Constants.HUMP_RATE * receivingArea.receivingTrack[trackNo].train.size();
-			classificationArea.updateTime(Test1.time);
-			receivingArea.receivingTrack[trackNo].train.clear();
-			receivingArea.receivingTrack[trackNo].ifEmpty = true;			
+			else{   //如果沒有火車就結束掉hump的工作(這邊可能要再修改，注意結果是不是有所有block都有抓到)			
+				System.out.println("[Hump]There is no train at receivingArea now.");
+				if(Test1.time < receivingArea.blockList.get(0).get(0).timeAtReceivingArea)
+					Test1.time = receivingArea.blockList.get(0).get(0).timeAtReceivingArea;
+				return;
+			}
 		}
-		else{   //如果沒有火車就結束掉hump的工作(這邊可能要再修改，注意結果是不是有所有block都有抓到)
-			Test1.time+=0.1f;
-			System.out.println("[Hump]There is no train at receivingArea.");
+		if(ifSuccessAccept == false){   //如果接收失敗就加時間跳掉
+			System.out.println("[Hump]train add into classification area error.");
+			if(receivingArea.blockList.isEmpty()==false)
+				Test1.time+=1.0f/60;
 		}
 	}
 	

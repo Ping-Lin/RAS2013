@@ -4,6 +4,7 @@ public class OutboundArea implements Runnable{
 	Track[] outboundTrack;
 	int count;   //算出去的車子數
 	double time;
+	ArrayList<ArrayList<Block>> outboundBlockList;
 	
 	public OutboundArea(){
 		outboundTrack = new Track[Constants.DEPARTURE_TRACKS_NUMBER];
@@ -11,6 +12,7 @@ public class OutboundArea implements Runnable{
 			outboundTrack[i] = new Track();
 		count = 0;
 		time = 0.0;
+		outboundBlockList = new ArrayList<>();
 	}
 	
 	/*
@@ -58,10 +60,12 @@ public class OutboundArea implements Runnable{
 				b.timeDepartureAtDepartureArea = time;
 				b.departureDay = (int)(time/24)+ 1;
 			}
-			
+			ArrayList <Block> tmpBlockList = new ArrayList<Block>();
+			tmpBlockList.addAll(outboundTrack[id].train);
+			outboundBlockList.add(tmpBlockList);
+
 			outboundTrack[id].train.clear();
-			outboundTrack[id].ifEmpty = true;		
-			
+			outboundTrack[id].ifEmpty = true;
 			count++;
 		}
 	}
