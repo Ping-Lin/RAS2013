@@ -57,6 +57,9 @@ public class PullBack implements Runnable{
 				if(getTime()>time)
 					time = getTime();
 				
+				//如果要被拉的火車時間都小於outboundArea track的pullback時間,亦或大於等於啦 的判斷
+				time = outboundArea.smallestPullBackTimeOfEmptyTrack(time);
+				
 				System.out.println("[Pullback]Start: " + time);
 				for(Block b: train){
 					b.timeStartPullBack = time;

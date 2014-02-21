@@ -29,14 +29,14 @@ public class Test1 {
 		OutboundArea outboundArea = new OutboundArea();
 		ScheduledExecutorService service = Executors.newScheduledThreadPool(4);
 
-		service.scheduleAtFixedRate(receivingArea , 0, 250, TimeUnit.MILLISECONDS);
-		service.scheduleAtFixedRate(hump , 120, 250, TimeUnit.MILLISECONDS);
-		service.scheduleAtFixedRate(new PullBack(classificationArea, outboundArea, 1), 150, 250, TimeUnit.MILLISECONDS);
-		service.scheduleAtFixedRate(new PullBack(classificationArea, outboundArea, 2), 172, 280, TimeUnit.MILLISECONDS);
-		service.scheduleAtFixedRate(outboundArea ,170, 250, TimeUnit.MILLISECONDS);
+		service.scheduleAtFixedRate(receivingArea , 0, 600, TimeUnit.MILLISECONDS);   //原250
+		service.scheduleAtFixedRate(hump , 120, 600, TimeUnit.MILLISECONDS);
+		service.scheduleAtFixedRate(new PullBack(classificationArea, outboundArea, 1), 150, 600, TimeUnit.MILLISECONDS);
+		//service.scheduleAtFixedRate(new PullBack(classificationArea, outboundArea, 2), 172, 280, TimeUnit.MILLISECONDS);
+		service.scheduleAtFixedRate(outboundArea ,170, 600, TimeUnit.MILLISECONDS);
 
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(2000000);
 			service.shutdown();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -54,7 +54,7 @@ public class Test1 {
 	public static void readExcelFile(ArrayList<ArrayList<Block>> blockList){
 		
 		try {
-			InputStream excelFile = new FileInputStream("src/data_readme/Input_data_set_1.xls");   //要讀的檔案
+			InputStream excelFile = new FileInputStream("src/data_readme/Input_data_set_5.xls");   //要讀的檔案
 			jxl.Workbook readWorkBook = Workbook.getWorkbook(excelFile);   //將其讀入workbook中
 			Sheet readSheet = readWorkBook.getSheet("Inbound Train Info");   //讀sheet
 			
@@ -219,7 +219,7 @@ public class Test1 {
 				writeSheet.addCell(new Label(3, i+1, changeToFormatTime(bl.get(i).get(0).timeStartPullBack)));
 				writeSheet.addCell(new Label(4, i+1, changeToFormatTime(bl.get(i).get(0).timeEndPullBack)));
 				writeSheet.addCell(new Label(5, i+1, changeToFormatTime(bl.get(i).get(0).timeDepartureAtDepartureArea)));
-				writeSheet.addCell(new Label(6, i+1, "D" + Integer.toString(bl.get(i).get(0).departureTrackNo)));
+				writeSheet.addCell(new Label(6, i+1, "D" + Integer.toString(bl.get(i).get(0).departureTrackNo+1)));
 				writeSheet.addCell(new Label(7, i+1, Integer.toString(tmpBlockName.size())));
 				writeSheet.addCell(new Label(8, i+1, Integer.toString(bl.get(i).size())));
 				writeSheet.addCell(new Label(9, i+1, destinationOfBlocks));
@@ -277,7 +277,7 @@ public class Test1 {
 					writeSheet.addCell(new Label(2, count, "i" + bl.get(i).get(j).trainId));
 					writeSheet.addCell(new Label(3, count, Integer.toString(bl.get(i).get(j).arrivalDay)));
 					writeSheet.addCell(new Label(4, count, changeToFormatTime(bl.get(i).get(j).timeAtReceivingArea)));
-					writeSheet.addCell(new Label(5, count, "R" + bl.get(i).get(j).receivingTrackNo));
+					writeSheet.addCell(new Label(5, count, "R" + (bl.get(i).get(j).receivingTrackNo+1)));
 					writeSheet.addCell(new Label(6, count, changeToFormatTime(bl.get(i).get(j).timeStartHump)));
 					writeSheet.addCell(new Label(7, count, changeToFormatTime(bl.get(i).get(j).timeEndHump)));
 					writeSheet.addCell(new Label(8, count, Integer.toString(bl.get(i).get(j).departureDay)));
@@ -285,8 +285,8 @@ public class Test1 {
 					writeSheet.addCell(new Label(10, count, changeToFormatTime(bl.get(i).get(j).timeStartPullBack)));
 					writeSheet.addCell(new Label(11, count, changeToFormatTime(bl.get(i).get(j).timeEndPullBack)));
 					writeSheet.addCell(new Label(12, count, changeToFormatTime(bl.get(i).get(j).timeDepartureAtDepartureArea)));
-					writeSheet.addCell(new Label(13, count, "o" + bl.get(i).get(j).outboundTrainNo));
-					writeSheet.addCell(new Label(14, count, "D" + bl.get(i).get(j).departureTrackNo));
+					writeSheet.addCell(new Label(13, count, "o" + (bl.get(i).get(j).outboundTrainNo+1)));
+					writeSheet.addCell(new Label(14, count, "D" + (bl.get(i).get(j).departureTrackNo+1)));
 				}
 			}		
 			

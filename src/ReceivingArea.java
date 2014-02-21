@@ -27,8 +27,15 @@ public class ReceivingArea implements Runnable{
 					&& (blockList.get(0).get(0).timeAtReceivingArea <= Test1.time + Constants.HUMP_INTERVAL)
 					&& ((blockList.get(0).get(0).timeAtReceivingArea <= Test1.time1P) || 
 						(blockList.get(0).get(0).timeAtReceivingArea <= Test1.time2P))){
+				
+				blockList.get(0).get(0).timeAtReceivingArea = smallestHumpTimeOfEmptyTrack(blockList.get(0).get(0).timeAtReceivingArea);
 				if(blockList.get(0).get(0).timeAtReceivingArea >= receivingTrack[i].humpTime){
-					System.out.println("!!!!" + receivingTrack[i].humpTime);
+				
+					System.out.println("!!!!" + blockList.get(0).get(0).timeAtReceivingArea);
+					
+					for(Block b : blockList.get(0)){
+						b.timeAtReceivingArea = blockList.get(0).get(0).timeAtReceivingArea;
+					}
 					receivingTrack[i].train = blockList.get(0);
 					for(Block b : receivingTrack[i].train){   //設定每一個car的receiving track為當前的track
 						b.receivingTrackNo = i;
@@ -74,5 +81,27 @@ public class ReceivingArea implements Runnable{
 	
 	public void run(){
 		moveInTrain();
+	}
+	
+	/*
+	 * 如果傳進來的時間比每個軌道的pullBack時間都還小,則找到空的軌道且回傳最近時間的那個時間
+	 */
+	double smallestHumpTimeOfEmptyTrack(double pt){
+		double min = Double.MAX_VALUE;
+		boolean empty = false;
+		for(Track t : receivingTrack){
+			if(t.ifEmpty == true){
+				empty = true;
+				if(pt >= t.humpTime)
+					return pt;
+				if(t.humpTime < min){
+					min = t.humpTime;
+				}
+			}
+		}
+		if(empty == true)
+			return min;
+		else
+			return pt;
 	}
 }

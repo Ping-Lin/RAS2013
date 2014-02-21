@@ -22,7 +22,7 @@ public class OutboundArea implements Runnable{
 	public boolean receivePullBackBlock(ArrayList<Block> b){
 		//塞空的軌道
 		for(Track ot : outboundTrack){
-			if(ot.ifEmpty == true){
+			if((ot.ifEmpty == true) && (b.get(0).timeStartPullBack >= ot.pullBackTime)){
 				ot.train.addAll(b);
 				ot.ifEmpty = false;
 				return true;
@@ -57,9 +57,10 @@ public class OutboundArea implements Runnable{
 			for(Block b : outboundTrack[id].train){
 				b.outboundTrainNo = count;
 				b.departureTrackNo = id;
-				b.timeDepartureAtDepartureArea = time;
+				b.timeDepartureAtDepartureArea = time;			
 				b.departureDay = (int)(time/24)+ 1;
 			}
+			outboundTrack[id].pullBackTime = time;
 			ArrayList <Block> tmpBlockList = new ArrayList<Block>();
 			tmpBlockList.addAll(outboundTrack[id].train);
 			outboundBlockList.add(tmpBlockList);
@@ -87,5 +88,27 @@ public class OutboundArea implements Runnable{
 			i++;
 		}
 		return goOutId;
+	}
+	
+	/*
+	 * 如果傳進來的時間比每個軌道的pullBack時間都還小,則找到空的軌道且回傳最近時間的那個時間
+	 */
+	double smallestPullBackTimeOfEmptyTrack(double pt){
+		double min = Double.MAX_VALUE;
+		boolean empty = false;
+		for(Track t : outboundTrack){
+			if(t.ifEmpty == true){
+				empty = true;
+				if(pt >= t.pullBackTime)
+					return pt;
+				if(t.pullBackTime < min){
+					min = t.pullBackTime;
+				}
+			}
+		}
+		if(empty == true)
+			return min;
+		else
+			return pt;
 	}
 }
